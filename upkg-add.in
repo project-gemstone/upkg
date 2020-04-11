@@ -1,1 +1,64 @@
 #!/bin/bash
+# Copyright 2019, John Unland
+# SPDX-License-Identifier: GPL-2.0
+
+trap "interrupted" SIGHUP SIGINT SIGQUIT SIGTERM
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+WORK_DIR="$(pwd)"
+
+msg() {
+    printf "${NC} >>> ${NC}\n" "$@"
+}
+
+warn_msg() {
+    printf "${YELLOW} >>> ${NC}\n" "$@"
+}
+
+ok_msg() {
+    printf "${GREEN} >>> ${NC}\n" "$@"
+}
+
+fail_msg() {
+    printf "${RED} >>> ${NC}\n" "$@"
+    exit 1
+}
+
+parse_opts() {
+    while :; do
+        case $1
+            -h | --help ) SHOW_HELP=yes ;;
+            --version ) SHOW_VERSION=yes ;;
+            -v | --verbose ) VERBOSE=yes ;;
+            --debug ) DEBUG=yes ;;
+            * ) fail_msg "Invalid option passed: ($1)" ;;
+        esac
+    done
+}
+
+help() {	
+	cat << EOF
+Usage:
+  $(basename $0) [ <options> <arguments> ]
+
+Options:
+  -v, --verbose             Print all commands as it runs.
+  -h, --help                Show this help page.
+      --debug               Show debug messages.
+      --version             Show version information about this program.
+      
+EOF
+}
+
+
+
+main() {
+    parse_opts $@
+    echo "$SHOW_HELP $SHOW_VERSION $VERBOSE"
+}
+
+main "$@"
